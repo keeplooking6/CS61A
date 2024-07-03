@@ -45,30 +45,26 @@ test = {
           'code': r"""
           >>> counted_dice = make_test_dice(4, 1, 2, 6)
           >>> roll_dice(3, counted_dice)
-          43d176e102c8d95338faf8791aa509b3
-          # locked
+          1
           >>> # Make sure you call dice exactly num_rolls times!
           >>> # If you call it fewer or more than that, it won't be at the right spot in the cycle for the next roll
           >>> # Note that a return statement within a loop ends the loop
           >>> roll_dice(1, counted_dice)
-          327b19ffebddf93982e1ad2a4a6486f4
-          # locked
+          6
           """,
           'hidden': False,
-          'locked': True,
+          'locked': False,
           'multiline': False
         },
         {
           'code': r"""
           >>> roll_dice(9, make_test_dice(6))
-          72862184559d57299206f055e2cc5a63
-          # locked
+          54
           >>> roll_dice(7, make_test_dice(2, 2, 2, 2, 2, 2, 1))
-          43d176e102c8d95338faf8791aa509b3
-          # locked
+          1
           """,
           'hidden': False,
-          'locked': True,
+          'locked': False,
           'multiline': False
         }
       ],

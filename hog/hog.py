@@ -9,7 +9,7 @@ GOAL = 100  # The goal of Hog is to score 100 points.
 # Phase 1: Simulator #
 ######################
 
-
+# 扔num_rolls次six_sided面骰子，
 def roll_dice(num_rolls, dice=six_sided):
     """Simulate rolling the DICE exactly NUM_ROLLS > 0 times. Return the sum of
     the outcomes unless any of the outcomes is 1. In that case, return 1.
@@ -23,8 +23,23 @@ def roll_dice(num_rolls, dice=six_sided):
     # BEGIN PROBLEM 1
     "*** YOUR CODE HERE ***"
     # END PROBLEM 1
+#     执行num_roll次循环，返回sow_row规则：有1则本轮得分为1，无1，则得分为总和,即使得分为1，也要把骰子掷完
+#   注意：dice()只能执行一次
+    sum = 0
+    flag = 0
+    for i in range(0,num_rolls):
+        current_num = dice()
+        if current_num == 1:
+            flag = 1
+        if flag != 1:
+            sum += current_num
+        else:
+            sum = 1
+
+    return sum
 
 
+# 如果玩家扔出0骰子，该获得多少分
 def boar_brawl(player_score, opponent_score):
     """Return the points scored by rolling 0 dice according to Boar Brawl.
 
@@ -35,8 +50,19 @@ def boar_brawl(player_score, opponent_score):
     # BEGIN PROBLEM 2
     "*** YOUR CODE HERE ***"
     # END PROBLEM 2
+#     当玩家掷出0骰子时，返回的分数应该是什么
+
+    player_ones = player_score % 10
+    opponent_tens = opponent_score // 10 % 10
+
+    difference_value = abs(opponent_tens - player_ones)
+
+    score = difference_value * 3
+
+    return max(score,1)
 
 
+# 扔num_rolls次骰子，获得多少分
 def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     """Return the points scored on a turn rolling NUM_ROLLS dice when the
     player has PLAYER_SCORE points and the opponent has OPPONENT_SCORE points.
@@ -54,6 +80,10 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     "*** YOUR CODE HERE ***"
     # END PROBLEM 3
 
+    if num_rolls == 0:
+        return boar_brawl(player_score, opponent_score)
+    else:
+        return roll_dice(num_rolls, dice)
 
 def simple_update(num_rolls, player_score, opponent_score, dice=six_sided):
     """Return the total score of a player who starts their turn with
@@ -287,7 +317,7 @@ def final_strategy(score, opponent_score):
 # NOTE: The function in this section does not need to be changed. It uses
 # features of Python not yet covered in the course.
 
-@main
+# @main
 def run(*args):
     """Read in the command-line argument and calls corresponding functions."""
     import argparse

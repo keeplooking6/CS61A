@@ -56,3 +56,8 @@ def make_test_dice(*outcomes):
         index = (index + 1) % len(outcomes)
         return outcomes[index]
     return dice
+"""
+make_test_dice(1,2,3,4)
+dice(),1,index=3,4%4=0,
+dice(),2,2
+"""

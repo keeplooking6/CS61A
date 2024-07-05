@@ -62,7 +62,7 @@ def boar_brawl(player_score, opponent_score):
     return max(score,1)
 
 
-# 扔num_rolls次骰子，获得多少分
+# 本局扔num_rolls次骰子，会获得多少分（不是总分）
 def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     """Return the points scored on a turn rolling NUM_ROLLS dice when the
     player has PLAYER_SCORE points and the opponent has OPPONENT_SCORE points.
@@ -85,6 +85,7 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     else:
         return roll_dice(num_rolls, dice)
 
+# 掷n次骰子后返回的总分数(simple_update的结果)
 def simple_update(num_rolls, player_score, opponent_score, dice=six_sided):
     """Return the total score of a player who starts their turn with
     PLAYER_SCORE and then rolls NUM_ROLLS DICE, ignoring Sus Fuss.
@@ -92,6 +93,7 @@ def simple_update(num_rolls, player_score, opponent_score, dice=six_sided):
     score = player_score + take_turn(num_rolls, player_score, opponent_score, dice)
     return score
 
+# 返回n是否为素数
 def is_prime(n):
     """Return whether N is prime."""
     if n == 1:
@@ -107,20 +109,43 @@ def num_factors(n):
     """Return the number of factors of N, including 1 and N itself."""
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    # 是否为素数，是素数直接返回2
+    if is_prime(n):
+        return 2
+    # 得分为1时返回1个因数,得分为2时返回2个因数
+    if n == 1:
+        return 1
+    if n == 2:
+        return 2
+    # 不是素数，排除1和n这两个因子外，再计算还有多少个因子
+    count = 2
+    for i in range(2,n):
+        if n % i ==0:
+            count += 1
+    return count
     # END PROBLEM 4
 
+# 3,4个因数的分数，就加到下一个素数
 def sus_points(score):
     """Return the new score of a player taking into account the Sus Fuss rule."""
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    if num_factors(score) == 3 or num_factors(score) == 4:
+        while not is_prime(score):
+            # print("DEBUG:",score)
+            score += 1
+    return score
     # END PROBLEM 4
 
+# 将经过sus规则的分数返回
 def sus_update(num_rolls, player_score, opponent_score, dice=six_sided):
     """Return the total score of a player who starts their turn with
     PLAYER_SCORE and then rolls NUM_ROLLS DICE, *including* Sus Fuss.
     """
     # BEGIN PROBLEM 4
     "*** YOUR CODE HERE ***"
+    un_sus_score = simple_update(num_rolls, player_score, opponent_score, dice)
+    return sus_points(un_sus_score)
     # END PROBLEM 4
 
 
@@ -130,7 +155,7 @@ def always_roll_5(score, opponent_score):
     """
     return 5
 
-
+# 模拟全流程，返回两个玩家的最终分数
 def play(strategy0, strategy1, update,
          score0=0, score1=0, dice=six_sided, goal=GOAL):
     """Simulate a game and return the final scores of both players, with
@@ -160,6 +185,23 @@ def play(strategy0, strategy1, update,
     who = 0  # Who is about to take a turn, 0 (first) or 1 (second)
     # BEGIN PROBLEM 5
     "*** YOUR CODE HERE ***"
+
+    def update_score(num_rolls, current_score, opponent_score, dice, update_strategy):
+        if update_strategy == "sus_update":
+            return sus_update(num_rolls, current_score, opponent_score, dice)
+        else:
+            return simple_update(num_rolls, current_score, opponent_score, dice)
+
+    while score0 < goal and score1 < goal:
+        if who == 0:
+            num_rolls0 = strategy0(score0, score1)
+            score0 = update_score(num_rolls0, score0, score1, dice,update)
+            who = 1-who
+        else:
+            num_rolls1 = strategy1(score1, score0)
+            score1 = update_score(num_rolls1, score1, score0, dice,update)
+            who = 1-who
+
     # END PROBLEM 5
     return score0, score1
 

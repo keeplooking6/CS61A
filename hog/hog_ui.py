@@ -8,7 +8,7 @@ from hog import *
 # Printing game events #
 ########################
 
-
+# 将双方的扔骰子次数，采用哪种加分方法，和分数值，几面骰子入参，得到最终的分数
 def play_and_print(strategy0, strategy1):
     """Simulate a game and print out what happened during the simulation."""
     final0, final1 = play(printing_strategy(0, strategy0),
@@ -17,7 +17,7 @@ def play_and_print(strategy0, strategy1):
                           printing_dice(six_sided))
     print('The final score is Player 0:', final0, 'vs Player 1:', final1)
 
-
+# 打印出两边的分数和掷骰子的次数。
 def printing_strategy(who, strategy):
     """Return a strategy that also prints the player's score and choice.
 
@@ -46,7 +46,7 @@ def printing_strategy(who, strategy):
         return num_rolls
     return choose_and_print
 
-
+# 用于打印掷骰子的结果。
 def printing_dice(dice):
     """Return a dice function that also prints the outcome and a space."""
     def dice_and_print():
@@ -56,7 +56,7 @@ def printing_dice(dice):
         return outcome
     return dice_and_print
 
-
+# 用于打印每次回合的结果。
 def sus_update_and_print(num_rolls, player_score, opponent_score, dice):
     """Return the updated score, print out the score update, and print when
     Sus Fuss is triggered.
@@ -93,6 +93,10 @@ def get_int(prompt, lower, upper):
         choice = input(prompt)
     return int(choice)
 
+# 返回一个策略，让一个人通过调用来选择每轮掷多少个骰子（闭包写法）
+# 保持状态，相同的逻辑可以应用于不同的玩家
+# 代码复用，n个玩家也可以使用同一个interactive_strategy来生成玩家的策略
+# 封装和隔离：内部函数可以访问到who，但对外部who是隐藏的，减少全局变量的使用
 
 def interactive_strategy(who):
     """Return a strategy for which the user provides the number of rolls."""
@@ -107,7 +111,7 @@ def interactive_strategy(who):
 # Playing the game #
 ####################
 
-
+# 选定好几位真实玩家后，计算机策略是每次投掷5次，真人玩家策略看输入数字扔几次骰子
 def play_with(num_players):
     """Play a game with NUM_PLAYERS interactive (human) players."""
     if num_players == 0:
@@ -119,7 +123,8 @@ def play_with(num_players):
     else:
         print('num_players must be 0, 1, or 2.')
 
-
+# 参与扔骰子的真人玩家有几个，以参数输入
+# python hog_ui.py -n 1
 @main
 def run(*args):
     """Select number of players and play a game."""

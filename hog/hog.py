@@ -78,12 +78,13 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     assert num_rolls <= 10, 'Cannot roll more than 10 dice.'
     # BEGIN PROBLEM 3
     "*** YOUR CODE HERE ***"
-    # END PROBLEM 3
-
     if num_rolls == 0:
         return boar_brawl(player_score, opponent_score)
     else:
         return roll_dice(num_rolls, dice)
+    # END PROBLEM 3
+
+
 
 # 掷n次骰子后返回的总分数(simple_update的结果)
 def simple_update(num_rolls, player_score, opponent_score, dice=six_sided):
@@ -148,6 +149,7 @@ def sus_update(num_rolls, player_score, opponent_score, dice=six_sided):
     return sus_points(un_sus_score)
     # END PROBLEM 4
 
+# print('----',simple_update(9,64,24,make_test_dice(5, 5, 1, 4, 6, 6, 2, 4, 1)))
 
 def always_roll_5(score, opponent_score):
     """A strategy of always rolling 5 dice, regardless of the player's score or
@@ -187,7 +189,7 @@ def play(strategy0, strategy1, update,
     "*** YOUR CODE HERE ***"
 
     def update_score(num_rolls, current_score, opponent_score, dice, update_strategy):
-        if update_strategy == "sus_update":
+        if update_strategy == sus_update:
             return sus_update(num_rolls, current_score, opponent_score, dice)
         else:
             return simple_update(num_rolls, current_score, opponent_score, dice)
@@ -205,12 +207,13 @@ def play(strategy0, strategy1, update,
     # END PROBLEM 5
     return score0, score1
 
+# play(update=sus_update,score0=64,score1=24,goal=88,dice=make_test_dice(5, 5, 1, 4, 6, 6, 2, 4, 1))
 
 #######################
 # Phase 2: Strategies #
 #######################
 
-
+# 返回相同的扔骰子次数,不管给定的分数是多少
 def always_roll(n):
     """Return a player strategy that always rolls N dice.
 
@@ -227,7 +230,11 @@ def always_roll(n):
     assert n >= 0 and n <= 10
     # BEGIN PROBLEM 6
     "*** YOUR CODE HERE ***"
+    def strategy(score0, score1):
+        return n
+    return strategy
     # END PROBLEM 6
+
 
 
 def catch_up(score, opponent_score):
@@ -244,7 +251,9 @@ def catch_up(score, opponent_score):
     else:
         return 5
 
-
+# 检测一个策略 是否总是返回相同数量的骰子,而不管给定的分数是多少
+# 就是检测用户自定义的策略是否符合标准：即不论参数是什么，总是返回固定的值，
+# 输入n个不同的值来进行检验
 def is_always_roll(strategy, goal=GOAL):
     """Return whether STRATEGY always chooses the same number of dice to roll
     given a game that goes to GOAL points.
@@ -258,6 +267,13 @@ def is_always_roll(strategy, goal=GOAL):
     """
     # BEGIN PROBLEM 7
     "*** YOUR CODE HERE ***"
+    constant_results = strategy(0,0)
+    for score0 in range(goal):
+        for score1 in range(goal):
+            if strategy(score0,score1) != constant_results:
+                return False
+
+    return True
     # END PROBLEM 7
 
 

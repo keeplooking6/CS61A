@@ -276,13 +276,13 @@ def is_always_roll(strategy, goal=GOAL):
     return True
     # END PROBLEM 7
 
-
+# 返回内部方法，再调用内部方法传参，内部方法的内部使用original_function方法，达成了使用外部方法的参数original_function和samples_count的目的
 def make_averaged(original_function, samples_count=1000):
     """Return a function that returns the average value of ORIGINAL_FUNCTION
     called SAMPLES_COUNT times.
 
     To implement this function, you will have to use *args syntax.
-
+    # 扔40次骰子，每次扔1个骰子，依次出现的骰子数字为4，2，5，1，得出分数总和后求平均值
     >>> dice = make_test_dice(4, 2, 5, 1)
     >>> averaged_dice = make_averaged(roll_dice, 40)
     >>> averaged_dice(1, dice)  # The avg of 10 4's, 10 2's, 10 5's, and 10 1's
@@ -290,6 +290,13 @@ def make_averaged(original_function, samples_count=1000):
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
+    def averaged_func(*args):
+        total = 0
+        for i in range(samples_count):
+            # 得出本次扔骰子的分数，然后累加上原来的分数
+            total +=original_function(*args)
+        return total/samples_count
+    return averaged_func
     # END PROBLEM 8
 
 

@@ -9,7 +9,7 @@ GOAL = 100  # The goal of Hog is to score 100 points.
 # Phase 1: Simulator #
 ######################
 
-# 扔num_rolls次six_sided面骰子，
+# 一轮中扔num_rolls次six_sided面骰子，得分为多少
 def roll_dice(num_rolls, dice=six_sided):
     """Simulate rolling the DICE exactly NUM_ROLLS > 0 times. Return the sum of
     the outcomes unless any of the outcomes is 1. In that case, return 1.
@@ -62,7 +62,7 @@ def boar_brawl(player_score, opponent_score):
     return max(score,1)
 
 
-# 本局扔num_rolls次骰子，会获得多少分（不是总分）
+# 本轮扔num_rolls次骰子，会获得多少分（不是总分）
 def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
     """Return the points scored on a turn rolling NUM_ROLLS dice when the
     player has PLAYER_SCORE points and the opponent has OPPONENT_SCORE points.
@@ -86,7 +86,7 @@ def take_turn(num_rolls, player_score, opponent_score, dice=six_sided):
 
 
 
-# 掷n次骰子后返回的总分数(simple_update的结果)
+# 一轮掷n次骰子后返回的总分数(simple_update的结果)
 def simple_update(num_rolls, player_score, opponent_score, dice=six_sided):
     """Return the total score of a player who starts their turn with
     PLAYER_SCORE and then rolls NUM_ROLLS DICE, ignoring Sus Fuss.
@@ -277,16 +277,18 @@ def is_always_roll(strategy, goal=GOAL):
     # END PROBLEM 7
 
 # 返回内部方法，再调用内部方法传参，内部方法的内部使用original_function方法，达成了使用外部方法的参数original_function和samples_count的目的
+# 样本数量1000，并不代表同一个骰子扔1000次，而是扔1000个不同的骰子，
 def make_averaged(original_function, samples_count=1000):
     """Return a function that returns the average value of ORIGINAL_FUNCTION
     called SAMPLES_COUNT times.
 
     To implement this function, you will have to use *args syntax.
     # 扔40次骰子，每次扔1个骰子，依次出现的骰子数字为4，2，5，1，得出分数总和后求平均值
+    # 扔40个不同的骰子，每次只扔1个骰子，
     >>> dice = make_test_dice(4, 2, 5, 1)
     >>> averaged_dice = make_averaged(roll_dice, 40)
     >>> averaged_dice(1, dice)  # The avg of 10 4's, 10 2's, 10 5's, and 10 1's
-    3.0
+    （40+20+50+10）/40= 3.0
     """
     # BEGIN PROBLEM 8
     "*** YOUR CODE HERE ***"
@@ -300,6 +302,13 @@ def make_averaged(original_function, samples_count=1000):
     # END PROBLEM 8
 
 
+
+# 09的测试用例：
+# >>> from hog import *
+# >>> dice = make_test_dice(3)   # dice always returns 3
+# >>> max_scoring_num_rolls(dice, samples_count=1000)
+# 不管samples_count样例有多少个，因为每一个和每一次掷出的骰子面都是3，即使掷10次，所以最高平均分，取决于扔出的次数，扔出越多，平均分越高，最多扔10次，就是扔10次的平均分最高
+# 每轮中平均扔多少次（1-10）拿到最高分，如果两轮扔的最高分相同，取最小的那个作为返回值
 def max_scoring_num_rolls(dice=six_sided, samples_count=1000):
     """Return the number of dice (1 to 10) that gives the maximum average score for a turn.
     Assume that the dice always return positive outcomes.
@@ -310,6 +319,22 @@ def max_scoring_num_rolls(dice=six_sided, samples_count=1000):
     """
     # BEGIN PROBLEM 9
     "*** YOUR CODE HERE ***"
+    # 最高平均分
+    max_average = 0
+    # 得到最高平均分的扔骰子次数
+    max_rolls = 0
+    for i in range(1,11):
+        # 进行1000轮重复实验，每轮扔1-10次骰子
+        average = make_averaged(roll_dice,samples_count)
+        score = average(i,dice)
+        if score > max_average:
+            max_average = score
+            #     第一轮，扔1次，重复实验1000次，最高平均分10，
+            #       第二轮，扔2次，最高平均分20
+            # 第八轮平均分：扔8次，最高平局分20，
+            # 应该返回2
+            max_rolls = i
+    return max_rolls
     # END PROBLEM 9
 
 

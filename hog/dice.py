@@ -28,7 +28,7 @@ four_sided = make_fair_dice(4)
 # 掷一个六面骰子，并得到结果
 six_sided = make_fair_dice(6)
 
-# 按顺序出现参数
+# 按顺序出现参数，即掷出指定的骰子面
 def make_test_dice(*outcomes):
     """Return a die that cycles deterministically through OUTCOMES.
 

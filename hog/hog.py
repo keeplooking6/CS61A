@@ -372,31 +372,50 @@ def run_experiments():
     print('final_strategy win rate:', average_win_rate(final_strategy))
     "*** You may add additional experiments as you wish ***"
 
-
-
+# 返回掷骰子的次数，如果当前情况掷0骰子有利，则掷0骰子，否则就返回对应的num_rolls
+# 进一步解释：如果掷0骰子可以至少保证有threshold这个阈值的分数，那么就没必要选择冒更多的风险，直接掷0骰子就好，如果不能，那么可以冒险一把，掷num_rolls次骰子
+# 这是保底策略，当前自己和对手的分数是确定的，所以如果掷0骰子能保证自己拿到x分，如果掷骰子就变成了不确定的分数
 def boar_strategy(score, opponent_score, threshold=11, num_rolls=6):
     """This strategy returns 0 dice if Boar Brawl gives at least THRESHOLD
     points, and returns NUM_ROLLS otherwise. Ignore score and Sus Fuss.
     """
     # BEGIN PROBLEM 10
+    if boar_brawl(score, opponent_score) >= threshold:
+        return 0
     return num_rolls  # Remove this line once implemented.
     # END PROBLEM 10
 
-
+# 如果扔0骰子后的分数经过sus fuss规则后的我的分数-原来我的分数>=阈值，那么就采取扔0骰子,否则扔num_rolls次骰子
 def sus_strategy(score, opponent_score, threshold=11, num_rolls=6):
     """This strategy returns 0 dice when your score would increase by at least threshold."""
     # BEGIN PROBLEM 11
+    # 如果经过sus fuss规则后的我的分数>=阈值，那么就采取扔0骰子
+    if sus_update(0,score,opponent_score) - score >= threshold:
+        return 0
     return num_rolls  # Remove this line once implemented.
     # END PROBLEM 11
 
-
+# 最终策略的胜率要超过基础策略run_experiments,只要投0从的骰子点数,比投6次的骰子点数多,那么就投0次
 def final_strategy(score, opponent_score):
     """Write a brief description of your final strategy.
-
+    综合考虑Boar Brawl和Sus Fuss规则，以及分数差距，设计策略。
+    # 如果即将接近100分,则采取保守策略
+    # 如果通过掷0骰子能获胜,则掷0
+    # 如果领先对手,则采取保守策略
+    # 如果落后对手,则采取进攻策略
     *** YOUR DESCRIPTION HERE ***
     """
     # BEGIN PROBLEM 12
-    return 6  # Remove this line once implemented.
+    if boar_brawl(score, opponent_score) >= 100:
+        return 0
+    if score + 10 >= 100:
+        return 1
+    # 如果前面的都不符合,并且当前领先对手,那么采取较保守策略
+    if score > opponent_score:
+        return 3
+    # 否则采取冒进策略
+    else:
+        return 6  # Remove this line once implemented.
     # END PROBLEM 12
 
 
@@ -415,7 +434,19 @@ def run(*args):
     parser.add_argument('--run_experiments', '-r', action='store_true',
                         help='Runs strategy experiments')
 
+    # args = parser.parse_args()
+    #
+    # if args.run_experiments:
+    #     run_experiments()
+
     args = parser.parse_args()
+    print("Arguments received:", args)  # 输出解析的参数值看是否包括 run_experiments
 
     if args.run_experiments:
+        print("Running experiments")
         run_experiments()
+    else:
+        print("run_experiments not triggered")  # 如果没有触发，打印提示信息
+
+if __name__ == '__main__':
+    run()
